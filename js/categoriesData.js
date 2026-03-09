@@ -1,4 +1,4 @@
-const mainData = () => {
+const categoriesData = () => {
   const url = "https://glo-anime-js-default-rtdb.firebaseio.com/anime.json";
   const localUrl = "./db.json";
 
@@ -34,11 +34,17 @@ const mainData = () => {
 
 function processData(data) {
   const ganres = new Set();
+  const ganreParams = new URLSearchParams(window.location.search).get("ganre");
+
   data.forEach((item) => {
     ganres.add(item.ganre);
   });
   renderTopAnime(data.sort((a, b) => b.views - a.views).slice(0, 5));
-  renderAnimeList(data, ganres);
+  if (ganreParams) {
+    renderAnimeList(data, [ganreParams]);
+  } else {
+    renderAnimeList(data, ganres);
+  }
   renderGanreList(ganres);
 }
 
@@ -69,14 +75,14 @@ function renderTopAnime(array) {
   });
 }
 function renderAnimeList(array, ganres) {
-  const wrapper = document.querySelector(".product .col-lg-8");
+  const wrapper = document.querySelector(".product-page .col-lg-8");
   const preloader = document.querySelector(".preloder");
 
   ganres.forEach((ganre) => {
     const productBlock = document.createElement("div");
     productBlock.classList.add("mb-5");
     const listBlock = document.createElement("div");
-    const list = array.filter((item) => item.ganre === ganre);
+    const list = array.filter((item) => item.tags.includes(ganre));
 
     listBlock.classList.add("row");
 
@@ -149,4 +155,4 @@ function renderGanreList(ganres) {
   });
 }
 
-mainData();
+categoriesData();
